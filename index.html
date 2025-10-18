@@ -1,46 +1,787 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <title>Fetch /terms Demo</title>
-</head>
-<body>
-  <h1>Fetch https://mil.psy.ntu.edu.tw:5000/terms</h1>
-  <button id="btn">Fetch again</button>
-  <pre id="out">Loading…</pre>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEUROSYNTH - 神經科學研究資料庫</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts - Netflix 使用 Helvetica Neue，這裡使用相似的 -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #141414;
+      color: #fff;
+    }
+
+    .netflix-logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #E50914;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .tab-button {
+      position: relative;
+      transition: all 0.3s ease;
+      color: #808080;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .tab-button.active {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .tab-button.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 3px;
+      background: #E50914;
+      border-radius: 2px;
+    }
+
+    .tab-button:hover {
+      color: #fff;
+    }
+
+    .loading {
+      border: 3px solid #333;
+      border-top: 3px solid #E50914;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .term-card {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      border: 1px solid #333;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .term-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(229, 9, 20, 0.1) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .term-card:hover::before {
+      opacity: 1;
+    }
+
+    .term-card:hover {
+      transform: scale(1.05);
+      border-color: #E50914;
+      box-shadow: 0 8px 30px rgba(229, 9, 20, 0.3);
+      z-index: 10;
+    }
+
+    .study-card {
+      background: linear-gradient(145deg, #1f1f1f 0%, #2a2a2a 100%);
+      border-left: 4px solid #E50914;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .study-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.1));
+      transition: width 0.3s ease;
+    }
+
+    .study-card:hover::after {
+      width: 100%;
+    }
+
+    .study-card:hover {
+      transform: translateX(10px);
+      box-shadow: 0 10px 40px rgba(229, 9, 20, 0.2);
+    }
+
+    .search-input {
+      background: #2a2a2a;
+      border: 2px solid #404040;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      background: #333;
+      border-color: #E50914;
+      box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: #808080;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #E50914 0%, #B20710 100%);
+      transition: all 0.3s ease;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #F40612 0%, #E50914 100%);
+      box-shadow: 0 6px 25px rgba(229, 9, 20, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .hero-gradient {
+      background: linear-gradient(180deg, rgba(20,20,20,0) 0%, rgba(20,20,20,0.8) 50%, #141414 100%);
+    }
+
+    .table-header {
+      background: #1a1a1a;
+      border-bottom: 2px solid #E50914;
+    }
+
+    .table-row {
+      border-bottom: 1px solid #2a2a2a;
+      transition: all 0.2s ease;
+    }
+
+    .table-row:hover {
+      background: #222;
+      cursor: pointer;
+    }
+
+    .progress-bar {
+      background: #333;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #E50914 0%, #F40612 100%);
+      height: 100%;
+      border-radius: 3px;
+      box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+    }
+
+    .badge {
+      background: linear-gradient(135deg, #E50914 0%, #B20710 100%);
+      color: #fff;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .content-section {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+    }
+
+    .section-title {
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar-thumb {
+      background: #E50914;
+      border-radius: 4px;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+      background: #F40612;
+    }
+
+    .spotlight {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .spotlight::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(229, 9, 20, 0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .category-nav {
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .category-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-btn {
+      display: inline-block;
+      padding: 0.5rem 1.5rem;
+      background: #2a2a2a;
+      color: #808080;
+      border: 2px solid transparent;
+      border-radius: 9999px;
+      font-weight: 500;
+      font-size: 0.875rem;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .category-btn:hover {
+      background: #333;
+      color: #fff;
+      border-color: #555;
+    }
+
+    .category-btn.active {
+      background: linear-gradient(135deg, #E50914 0%, #B20710 100%);
+      color: #fff;
+      border-color: #E50914;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+    }
+  </style>
 
   <script>
-    async function fetchTerms() {
-      const out = document.getElementById('out');
-      out.textContent = 'Requesting…';
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'netflix-red': '#E50914',
+            'netflix-black': '#141414',
+            'netflix-gray': '#2a2a2a',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="bg-black shadow-2xl sticky top-0 z-50 border-b border-gray-900">
+    <div class="container mx-auto px-6 py-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="netflix-logo">NEUROSYNTH</h1>
+          <p class="text-gray-400 text-sm mt-1 tracking-wide">神經科學研究資料庫</p>
+        </div>
+        <div class="text-right">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 bg-netflix-red rounded-full animate-pulse"></div>
+            <p class="text-sm text-gray-400">資料來源</p>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">mil.psy.ntu.edu.tw:5000</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container mx-auto px-6 py-10 max-w-7xl">
+
+    <!-- Tab Navigation -->
+    <div class="content-section rounded-xl mb-8 overflow-hidden">
+      <nav class="flex justify-around bg-black border-b border-gray-800">
+        <button id="tab-all-terms" class="tab-button active flex-1 px-6 py-5 text-center">
+          <div class="text-lg">所有術語</div>
+          <div class="text-xs text-gray-500 mt-1">BROWSE</div>
+        </button>
+        <button id="tab-related-terms" class="tab-button flex-1 px-6 py-5 text-center border-x border-gray-800">
+          <div class="text-lg">相關術語</div>
+          <div class="text-xs text-gray-500 mt-1">EXPLORE</div>
+        </button>
+        <button id="tab-study-search" class="tab-button flex-1 px-6 py-5 text-center">
+          <div class="text-lg">研究搜尋</div>
+          <div class="text-xs text-gray-500 mt-1">SEARCH</div>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="min-h-screen">
+
+      <!-- Tab 1: All Terms -->
+      <div id="content-all-terms" class="tab-content">
+        <div class="content-section rounded-xl p-8 spotlight">
+          <div class="mb-8">
+            <h2 class="text-4xl font-black text-white mb-3 tracking-tight">瀏覽所有術語</h2>
+            <p class="text-gray-400 text-lg">探索資料庫中所有的神經科學相關術語</p>
+          </div>
+
+          <!-- Category Navigation (Netflix Style) -->
+          <div class="mb-6">
+            <div class="category-nav flex gap-3 pb-4">
+              <button class="category-btn active" data-category="all" data-keywords="">全部</button>
+              <button class="category-btn" data-category="brain" data-keywords="brain,cortex,cortical,lobe,gyrus,sulcus,cerebral,prefrontal,parietal,temporal,occipital,frontal,amygdala,hippocampus,striatum,thalamus,hypothalamus,cerebellum,fusiform,angular,cingulate,insula,basal,ganglia">腦區結構</button>
+              <button class="category-btn" data-category="emotion" data-keywords="emotion,emotional,fear,anxiety,stress,anger,sad,happy,mood,affective,valence,arousal,disgust,threat">情緒情感</button>
+              <button class="category-btn" data-category="memory" data-keywords="memory,learning,recall,recognition,retrieval,encoding,consolidation,amnesia,episodic,semantic,declarative,procedural">記憶學習</button>
+              <button class="category-btn" data-category="attention" data-keywords="attention,attentional,focus,vigilance,concentration,alertness,selective,sustained">注意力</button>
+              <button class="category-btn" data-category="language" data-keywords="language,linguistic,speech,verbal,word,reading,writing,semantic,syntactic,phonological,lexical,comprehension">語言處理</button>
+              <button class="category-btn" data-category="vision" data-keywords="visual,vision,eye,ocular,seeing,sight,perceptual,face,object,spatial,motion,color">視覺感知</button>
+              <button class="category-btn" data-category="motor" data-keywords="motor,movement,action,hand,finger,limb,gesture,coordination,execution,planning,premotor">運動控制</button>
+              <button class="category-btn" data-category="social" data-keywords="social,empathy,theory,mind,interpersonal,mentalizing,perspective,interaction,communication">社會認知</button>
+              <button class="category-btn" data-category="cognitive" data-keywords="cognitive,executive,control,working,reasoning,thinking,planning,problem,solving,flexibility,inhibition">執行功能</button>
+              <button class="category-btn" data-category="decision" data-keywords="decision,choice,reward,value,preference,judgment,evaluation,risk,uncertainty">決策評估</button>
+              <button class="category-btn" data-category="perception" data-keywords="sensory,somatosensory,tactile,auditory,sound,hearing,taste,smell,olfactory,gustatory,touch">感官知覺</button>
+              <button class="category-btn" data-category="disorder" data-keywords="disorder,disease,syndrome,pathology,dysfunction,deficit,impairment,abnormal,clinical,patient,schizophrenia,depression,autism,adhd,alzheimer,parkinson">疾病病症</button>
+              <button class="category-btn" data-category="imaging" data-keywords="fmri,pet,eeg,meg,mri,scan,imaging,bold,activation,connectivity,functional,structural,diffusion,tract">神經影像</button>
+              <button class="category-btn" data-category="network" data-keywords="network,connectivity,connection,pathway,circuit,default,mode,salience,dorsal,ventral,resting,state">神經網路</button>
+              <button class="category-btn" data-category="processing" data-keywords="process,processing,task,performance,response,reaction,time,accuracy,error,correct">認知處理</button>
+              <button class="category-btn" data-category="development" data-keywords="development,developmental,age,aging,child,children,adolescent,adult,elderly,maturation,growth">發展老化</button>
+              <button class="category-btn" data-category="consciousness" data-keywords="consciousness,aware,awareness,conscious,unconscious,perception,experience,subjective">意識知覺</button>
+              <button class="category-btn" data-category="reward" data-keywords="reward,motivation,incentive,pleasure,dopamine,reinforcement,craving,wanting">獎賞動機</button>
+              <button class="category-btn" data-category="pain" data-keywords="pain,painful,nociceptive,sensation,discomfort,ache">疼痛感覺</button>
+              <button class="category-btn" data-category="other" data-keywords="study,research,analysis,method,participant,subject,trial,experiment,measure,score,test,data">研究相關</button>
+            </div>
+          </div>
+
+          <!-- Search Filter -->
+          <div class="mb-8">
+            <input
+              type="text"
+              id="filter-terms"
+              placeholder="搜尋術語..."
+              class="search-input w-full px-6 py-4 rounded-lg text-lg"
+            />
+          </div>
+
+          <!-- Terms Display -->
+          <div id="terms-display" class="scrollbar-custom">
+            <div class="flex justify-center py-20">
+              <div class="loading"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Related Terms -->
+      <div id="content-related-terms" class="tab-content hidden">
+        <div class="content-section rounded-xl p-8 spotlight">
+          <div class="mb-8">
+            <h2 class="text-4xl font-black text-white mb-3 tracking-tight">相關術語查詢</h2>
+            <p class="text-gray-400 text-lg">輸入術語以查找相關的神經科學概念</p>
+          </div>
+
+          <!-- Search Input -->
+          <div class="mb-8">
+            <div class="flex gap-4">
+              <input
+                type="text"
+                id="related-term-input"
+                placeholder="例如：amygdala, emotion, memory..."
+                class="search-input flex-1 px-6 py-4 rounded-lg text-lg"
+              />
+              <button
+                id="search-related-btn"
+                class="btn-primary px-8 py-4 rounded-lg text-sm"
+              >
+                搜尋
+              </button>
+            </div>
+          </div>
+
+          <!-- Related Terms Display -->
+          <div id="related-terms-display" class="scrollbar-custom">
+            <div class="text-center py-20 text-gray-500">
+              <div class="text-6xl mb-4">🔍</div>
+              <p class="text-xl">請輸入術語並點擊搜尋</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Study Search -->
+      <div id="content-study-search" class="tab-content hidden">
+        <div class="content-section rounded-xl p-8 spotlight">
+          <div class="mb-8">
+            <h2 class="text-4xl font-black text-white mb-3 tracking-tight">研究搜尋</h2>
+            <p class="text-gray-400 text-lg">使用邏輯查詢搜尋相關研究</p>
+          </div>
+
+          <!-- Search Input -->
+          <div class="mb-8">
+            <div class="flex gap-4">
+              <input
+                type="text"
+                id="query-input"
+                placeholder="例如：amygdala not emotion, memory and hippocampus..."
+                class="search-input flex-1 px-6 py-4 rounded-lg text-lg"
+              />
+              <button
+                id="search-studies-btn"
+                class="btn-primary px-8 py-4 rounded-lg text-sm"
+              >
+                搜尋
+              </button>
+            </div>
+          </div>
+
+          <!-- Studies Display -->
+          <div id="studies-display" class="scrollbar-custom">
+            <div class="text-center py-20 text-gray-500">
+              <div class="text-6xl mb-4">📚</div>
+              <p class="text-xl">請輸入查詢字串並點擊搜尋</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-800 mt-20 py-10 bg-black">
+    <div class="container mx-auto px-6 text-center">
+      <p class="text-gray-500 text-sm tracking-wide">© 2024 NEUROSYNTH | 資訊管理課程作業</p>
+      <p class="text-gray-700 text-xs mt-2">Inspired by Netflix Design Language</p>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = 'https://mil.psy.ntu.edu.tw:5000';
+
+    // Tab Switching
+    const tabs = document.querySelectorAll('.tab-button');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.add('hidden'));
+
+        tab.classList.add('active');
+        contents[index].classList.remove('hidden');
+      });
+    });
+
+    // ========== Tab 1: All Terms ==========
+    let allTerms = [];
+    let currentCategory = 'all';
+    let currentSearchQuery = '';
+
+    async function fetchAllTerms() {
+      const display = document.getElementById('terms-display');
+      display.innerHTML = '<div class="flex justify-center py-20"><div class="loading"></div></div>';
+
       try {
-        const resp = await fetch('https://mil.psy.ntu.edu.tw:5000/terms');
-        let info = `HTTP ${resp.status} ${resp.statusText}\n`;
-        const ct = resp.headers.get('content-type') || '';
+        const resp = await fetch(`${API_BASE}/terms`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
-        if (!resp.ok) {
-          const text = await resp.text();
-          out.textContent = info + '\n' + text;
-          return;
-        }
+        const data = await resp.json();
+        allTerms = data.terms || [];
 
-        if (ct.includes('application/json')) {
-          const data = await resp.json();
-          out.textContent = info + '\n' + JSON.stringify(data, null, 2);
-        } else {
-          const text = await resp.text();
-          out.textContent = info + '\n' + text;
-        }
+        displayTerms(allTerms);
       } catch (err) {
-        document.getElementById('out').textContent =
-          'Error: ' + (err && err.message ? err.message : String(err)) +
-          '\n\nCommon causes:\n1) CORS not allowed by the server\n2) Opening this file via file:// instead of a local server\n3) Network/server issues';
+        display.innerHTML = `
+          <div class="bg-red-900 bg-opacity-20 border border-netflix-red rounded-xl p-8 text-center">
+            <p class="text-netflix-red font-bold text-xl mb-2">載入失敗</p>
+            <p class="text-gray-400">${err.message}</p>
+          </div>
+        `;
       }
     }
 
-    document.getElementById('btn').addEventListener('click', fetchTerms);
-    fetchTerms();
+    function filterTerms() {
+      let filtered = allTerms;
+
+      // Apply category filter
+      if (currentCategory !== 'all') {
+        // Get keywords for current category
+        const categoryBtn = document.querySelector(`.category-btn[data-category="${currentCategory}"]`);
+        const keywords = categoryBtn ? categoryBtn.dataset.keywords.split(',') : [];
+
+        if (keywords.length > 0) {
+          filtered = filtered.filter(term => {
+            const termLower = term.toLowerCase();
+            return keywords.some(keyword => termLower.includes(keyword.toLowerCase()));
+          });
+        }
+      }
+
+      // Apply search filter
+      if (currentSearchQuery) {
+        filtered = filtered.filter(term =>
+          term.toLowerCase().includes(currentSearchQuery.toLowerCase())
+        );
+      }
+
+      displayTerms(filtered);
+    }
+
+    function displayTerms(terms) {
+      const display = document.getElementById('terms-display');
+
+      if (terms.length === 0) {
+        display.innerHTML = '<p class="text-center text-gray-500 py-12 text-lg">未找到相關術語</p>';
+        return;
+      }
+
+      const count = document.createElement('p');
+      count.className = 'text-sm text-gray-400 mb-6 font-medium tracking-wide';
+      count.innerHTML = `共 <span class="text-netflix-red font-bold text-lg">${terms.length}</span> 個術語`;
+
+      const grid = document.createElement('div');
+      grid.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4';
+
+      terms.forEach(term => {
+        const card = document.createElement('div');
+        card.className = 'term-card rounded-lg p-4 text-center font-medium';
+        card.innerHTML = `<div class="text-white">${term}</div>`;
+        card.onclick = () => searchRelatedTerms(term);
+        grid.appendChild(card);
+      });
+
+      display.innerHTML = '';
+      display.appendChild(count);
+      display.appendChild(grid);
+    }
+
+    // Category buttons
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active state
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Update current category and filter
+        currentCategory = btn.dataset.category;
+        filterTerms();
+      });
+    });
+
+    // Search filter
+    document.getElementById('filter-terms').addEventListener('input', (e) => {
+      currentSearchQuery = e.target.value.trim();
+      filterTerms();
+    });
+
+    // ========== Tab 2: Related Terms ==========
+    async function searchRelatedTerms(term) {
+      // Switch to related terms tab
+      tabs[1].click();
+      document.getElementById('related-term-input').value = term;
+
+      const display = document.getElementById('related-terms-display');
+      display.innerHTML = '<div class="flex justify-center py-20"><div class="loading"></div></div>';
+
+      try {
+        const resp = await fetch(`${API_BASE}/terms/${encodeURIComponent(term)}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        const data = await resp.json();
+        const related = data.related || [];
+
+        if (related.length === 0) {
+          display.innerHTML = '<p class="text-center text-gray-500 py-12 text-lg">未找到相關術語</p>';
+          return;
+        }
+
+        // Sort by Jaccard coefficient (descending)
+        related.sort((a, b) => b.jaccard - a.jaccard);
+
+        let html = `
+          <div class="mb-6 pb-6 border-b border-gray-800">
+            <p class="text-gray-400">找到 <span class="text-white font-bold text-xl">${related.length}</span> 個與</p>
+            <p class="text-netflix-red font-black text-3xl mt-2">「${term}」</p>
+            <p class="text-gray-400 mt-1">相關的術語</p>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-gray-800">
+            <table class="w-full">
+              <thead class="table-header">
+                <tr>
+                  <th class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider">術語</th>
+                  <th class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider">相關係數</th>
+                  <th class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider">共同出現</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+        related.slice(0, 50).forEach((item, index) => {
+          html += `
+            <tr class="table-row" onclick="searchRelatedTerms('${item.term.replace(/'/g, "\\'")}')">
+              <td class="px-6 py-4 text-white font-medium">${item.term}</td>
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="progress-bar w-32">
+                    <div class="progress-fill" style="width: ${(item.jaccard * 100).toFixed(1)}%"></div>
+                  </div>
+                  <span class="text-netflix-red font-bold text-sm">${item.jaccard.toFixed(3)}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-gray-400 font-medium">${item.co_count}</td>
+            </tr>
+          `;
+        });
+
+        html += `
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        if (related.length > 50) {
+          html += `<p class="text-center text-sm text-gray-500 mt-6">僅顯示前 50 個結果</p>`;
+        }
+
+        display.innerHTML = html;
+      } catch (err) {
+        display.innerHTML = `
+          <div class="bg-red-900 bg-opacity-20 border border-netflix-red rounded-xl p-8 text-center">
+            <p class="text-netflix-red font-bold text-xl mb-2">查詢失敗</p>
+            <p class="text-gray-400">${err.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    document.getElementById('search-related-btn').addEventListener('click', () => {
+      const term = document.getElementById('related-term-input').value.trim();
+      if (term) searchRelatedTerms(term);
+    });
+
+    document.getElementById('related-term-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const term = e.target.value.trim();
+        if (term) searchRelatedTerms(term);
+      }
+    });
+
+    // ========== Tab 3: Study Search ==========
+    async function searchStudies(query) {
+      const display = document.getElementById('studies-display');
+      display.innerHTML = '<div class="flex justify-center py-20"><div class="loading"></div></div>';
+
+      try {
+        const resp = await fetch(`${API_BASE}/query/${encodeURIComponent(query)}/studies`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        const data = await resp.json();
+        const studies = data.results || [];
+        const count = data.count || 0;
+
+        if (studies.length === 0) {
+          display.innerHTML = '<p class="text-center text-gray-500 py-12 text-lg">未找到相關研究</p>';
+          return;
+        }
+
+        let html = `
+          <div class="mb-8 pb-6 border-b border-gray-800">
+            <p class="text-gray-400">查詢條件</p>
+            <p class="text-netflix-red font-black text-3xl mt-2 mb-3">「${query}」</p>
+            <p class="text-gray-400">找到 <span class="text-white font-bold text-xl">${count}</span> 個研究結果</p>
+          </div>
+          <div class="space-y-5">
+        `;
+
+        studies.forEach((study, index) => {
+          html += `
+            <div class="study-card rounded-xl p-6 hover:bg-opacity-80">
+              <div class="flex items-start justify-between gap-4 mb-3">
+                <h3 class="text-xl font-bold text-white flex-1 leading-tight">${study.title}</h3>
+                <span class="badge px-4 py-2 rounded-full text-sm whitespace-nowrap">${study.year}</span>
+              </div>
+              <p class="text-gray-400 mb-2 font-medium">${study.authors}</p>
+              <p class="text-gray-500 text-sm italic mb-4">${study.journal}</p>
+              <div class="flex gap-2 flex-wrap">
+                <span class="px-3 py-1 bg-gray-800 text-gray-400 rounded-full text-xs font-mono">ID: ${study.study_id}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        html += '</div>';
+
+        display.innerHTML = html;
+      } catch (err) {
+        display.innerHTML = `
+          <div class="bg-red-900 bg-opacity-20 border border-netflix-red rounded-xl p-8 text-center">
+            <p class="text-netflix-red font-bold text-xl mb-2">搜尋失敗</p>
+            <p class="text-gray-400">${err.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    document.getElementById('search-studies-btn').addEventListener('click', () => {
+      const query = document.getElementById('query-input').value.trim();
+      if (query) searchStudies(query);
+    });
+
+    document.getElementById('query-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const query = e.target.value.trim();
+        if (query) searchStudies(query);
+      }
+    });
+
+    // ========== Initialize ==========
+    fetchAllTerms();
   </script>
 </body>
 </html>
-
