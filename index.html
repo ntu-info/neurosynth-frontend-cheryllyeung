@@ -333,13 +333,173 @@
         <div class="text-right">
           <div class="flex items-center gap-2">
             <div class="w-3 h-3 bg-netflix-red rounded-full animate-pulse"></div>
-            <p class="text-sm text-gray-400">資料來源</p>
+            <p class="text-sm text-gray-400" id="current-time">--:--:--</p>
           </div>
           <p class="text-xs text-gray-500 mt-1">mil.psy.ntu.edu.tw:5000</p>
+          <button id="shortcuts-btn" class="mt-2 text-xs text-gray-500 hover:text-netflix-red transition-colors">
+            ⌨️ 快捷鍵
+          </button>
         </div>
       </div>
     </div>
   </header>
+
+  <!-- Tutorial Modal -->
+  <div id="shortcuts-modal" class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+    <div class="content-section rounded-xl p-8 max-w-lg mx-4 relative">
+      <button id="close-shortcuts" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+
+      <!-- Tutorial Pages -->
+      <div id="tutorial-pages">
+
+        <!-- Page 0: Welcome -->
+        <div class="tutorial-page" data-page="0">
+          <div class="text-center mb-8">
+            <h2 class="text-4xl font-bold text-white mb-4">👋 歡迎使用</h2>
+            <h3 class="text-5xl font-black text-netflix-red mb-6">NEUROSYNTH</h3>
+            <p class="text-gray-400 text-lg">神經科學研究資料庫</p>
+          </div>
+          <div class="text-center">
+            <p class="text-gray-300 mb-6">讓我們快速了解如何使用鍵盤快捷鍵,<br>讓您的操作更加流暢!</p>
+          </div>
+        </div>
+
+        <!-- Page 1: Tab Switching -->
+        <div class="tutorial-page hidden" data-page="1">
+          <div class="text-center mb-6">
+            <div class="text-6xl mb-4">🔢</div>
+            <h3 class="text-3xl font-bold text-white mb-3">快速切換分頁</h3>
+            <p class="text-gray-400">使用數字鍵 1-4 快速切換不同功能</p>
+          </div>
+          <div class="space-y-4 bg-gray-900 bg-opacity-50 rounded-xl p-6">
+            <div class="flex items-center gap-4">
+              <kbd class="px-4 py-3 bg-gray-800 text-netflix-red rounded font-mono text-2xl font-bold min-w-[60px] text-center">1</kbd>
+              <span class="text-gray-300 text-lg">所有術語</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <kbd class="px-4 py-3 bg-gray-800 text-netflix-red rounded font-mono text-2xl font-bold min-w-[60px] text-center">2</kbd>
+              <span class="text-gray-300 text-lg">相關術語</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <kbd class="px-4 py-3 bg-gray-800 text-netflix-red rounded font-mono text-2xl font-bold min-w-[60px] text-center">3</kbd>
+              <span class="text-gray-300 text-lg">研究搜尋</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <kbd class="px-4 py-3 bg-gray-800 text-netflix-red rounded font-mono text-2xl font-bold min-w-[60px] text-center">4</kbd>
+              <span class="text-gray-300 text-lg">我的收藏</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page 2: Quick Search -->
+        <div class="tutorial-page hidden" data-page="2">
+          <div class="text-center mb-6">
+            <div class="text-6xl mb-4">🔍</div>
+            <h3 class="text-3xl font-bold text-white mb-3">快速搜尋</h3>
+            <p class="text-gray-400">隨時按下 / 鍵快速開始搜尋</p>
+          </div>
+          <div class="bg-gray-900 bg-opacity-50 rounded-xl p-8 text-center">
+            <kbd class="px-6 py-4 bg-gray-800 text-netflix-red rounded font-mono text-3xl font-bold">/</kbd>
+            <p class="text-gray-300 text-lg mt-6">游標會自動聚焦到搜尋框</p>
+            <p class="text-gray-500 text-sm mt-2">不需要用滑鼠點擊!</p>
+          </div>
+        </div>
+
+        <!-- Page 3: Clear Search -->
+        <div class="tutorial-page hidden" data-page="3">
+          <div class="text-center mb-6">
+            <div class="text-6xl mb-4">✨</div>
+            <h3 class="text-3xl font-bold text-white mb-3">清除搜尋</h3>
+            <p class="text-gray-400">按 Esc 鍵快速清除搜尋內容</p>
+          </div>
+          <div class="bg-gray-900 bg-opacity-50 rounded-xl p-8 text-center">
+            <kbd class="px-6 py-4 bg-gray-800 text-netflix-red rounded font-mono text-2xl font-bold">Esc</kbd>
+            <p class="text-gray-300 text-lg mt-6">清除搜尋框內容並取消聚焦</p>
+          </div>
+        </div>
+
+        <!-- Page 4: Favorites -->
+        <div class="tutorial-page hidden" data-page="4">
+          <div class="text-center mb-6">
+            <div class="text-6xl mb-4">⭐</div>
+            <h3 class="text-3xl font-bold text-white mb-3">收藏功能</h3>
+            <p class="text-gray-400">將喜歡的術語加入收藏</p>
+          </div>
+          <div class="bg-gray-900 bg-opacity-50 rounded-xl p-6 space-y-4">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">1️⃣</span>
+              <p class="text-gray-300">滑鼠移到術語卡片上</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">2️⃣</span>
+              <p class="text-gray-300">點擊出現的星號 ☆</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">3️⃣</span>
+              <p class="text-gray-300">按數字鍵 <kbd class="px-2 py-1 bg-gray-800 text-netflix-red rounded font-mono">4</kbd> 查看收藏</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page 5: Help -->
+        <div class="tutorial-page hidden" data-page="5">
+          <div class="text-center mb-6">
+            <div class="text-6xl mb-4">❓</div>
+            <h3 class="text-3xl font-bold text-white mb-3">隨時尋求幫助</h3>
+            <p class="text-gray-400">忘記快捷鍵了嗎?</p>
+          </div>
+          <div class="bg-gray-900 bg-opacity-50 rounded-xl p-8 text-center">
+            <kbd class="px-6 py-4 bg-gray-800 text-netflix-red rounded font-mono text-3xl font-bold">?</kbd>
+            <p class="text-gray-300 text-lg mt-6">按 ? 鍵隨時開啟快捷鍵說明</p>
+            <p class="text-gray-500 text-sm mt-2">或點擊右上角的「⌨️ 快捷鍵」按鈕</p>
+          </div>
+        </div>
+
+        <!-- Page 6: Finish -->
+        <div class="tutorial-page hidden" data-page="6">
+          <div class="text-center">
+            <div class="text-6xl mb-6">🎉</div>
+            <h3 class="text-4xl font-bold text-white mb-4">準備好了!</h3>
+            <p class="text-gray-300 text-lg mb-8">現在您已經了解所有快捷鍵<br>開始探索神經科學的世界吧!</p>
+            <div class="bg-netflix-red bg-opacity-10 border border-netflix-red rounded-xl p-4 mb-6">
+              <p class="text-netflix-red font-bold">💡 小提示</p>
+              <p class="text-gray-400 text-sm mt-2">隨時按 <kbd class="px-2 py-1 bg-gray-800 text-netflix-red rounded font-mono text-xs">?</kbd> 查看快捷鍵說明</p>
+            </div>
+            <label class="flex items-center justify-center gap-2 text-sm text-gray-400 cursor-pointer hover:text-white transition-colors">
+              <input type="checkbox" id="dont-show-again" class="rounded bg-gray-800 border-gray-700 text-netflix-red focus:ring-netflix-red">
+              <span>下次不再顯示新手教學</span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Progress Indicator -->
+      <div id="tutorial-progress" class="mt-8 mb-4">
+        <div class="flex justify-center gap-2 mb-4">
+          <div class="progress-dot active w-2 h-2 rounded-full bg-netflix-red"></div>
+          <div class="progress-dot w-2 h-2 rounded-full bg-gray-600"></div>
+          <div class="progress-dot w-2 h-2 rounded-full bg-gray-600"></div>
+          <div class="progress-dot w-2 h-2 rounded-full bg-gray-600"></div>
+          <div class="progress-dot w-2 h-2 rounded-full bg-gray-600"></div>
+          <div class="progress-dot w-2 h-2 rounded-full bg-gray-600"></div>
+          <div class="progress-dot w-2 h-2 rounded-full bg-gray-600"></div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between items-center">
+        <button id="tutorial-prev" class="px-6 py-3 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+          上一步
+        </button>
+        <span id="tutorial-page-info" class="text-gray-500 text-sm">1 / 7</span>
+        <button id="tutorial-next" class="px-6 py-3 bg-netflix-red text-white rounded-lg hover:bg-red-700 transition-colors font-bold">
+          下一步
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <!-- Main Container -->
   <main class="container mx-auto px-6 py-10 max-w-7xl">
@@ -355,9 +515,16 @@
           <div class="text-lg">相關術語</div>
           <div class="text-xs text-gray-500 mt-1">EXPLORE</div>
         </button>
-        <button id="tab-study-search" class="tab-button flex-1 px-6 py-5 text-center">
+        <button id="tab-study-search" class="tab-button flex-1 px-6 py-5 text-center border-x border-gray-800">
           <div class="text-lg">研究搜尋</div>
           <div class="text-xs text-gray-500 mt-1">SEARCH</div>
+        </button>
+        <button id="tab-favorites" class="tab-button flex-1 px-6 py-5 text-center">
+          <div class="text-lg flex items-center justify-center gap-2">
+            我的收藏
+            <span id="favorites-count" class="badge px-2 py-1 rounded-full text-xs">0</span>
+          </div>
+          <div class="text-xs text-gray-500 mt-1">FAVORITES</div>
         </button>
       </nav>
     </div>
@@ -491,6 +658,25 @@
         </div>
       </div>
 
+      <!-- Tab 4: Favorites -->
+      <div id="content-favorites" class="tab-content hidden">
+        <div class="content-section rounded-xl p-8 spotlight">
+          <div class="mb-8">
+            <h2 class="text-4xl font-black text-white mb-3 tracking-tight">我的收藏</h2>
+            <p class="text-gray-400 text-lg">您收藏的神經科學術語</p>
+          </div>
+
+          <!-- Favorites Display -->
+          <div id="favorites-display" class="scrollbar-custom">
+            <div class="text-center py-20 text-gray-500">
+              <div class="text-6xl mb-4">⭐</div>
+              <p class="text-xl">尚未收藏任何術語</p>
+              <p class="text-sm mt-2">在術語卡片上點擊星號即可收藏</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 
@@ -505,6 +691,100 @@
   <script>
     const API_BASE = 'https://mil.psy.ntu.edu.tw:5000';
 
+    // Update current time
+    function updateCurrentTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const timeString = `${hours}:${minutes}:${seconds}`;
+
+      const timeElement = document.getElementById('current-time');
+      if (timeElement) {
+        timeElement.textContent = timeString;
+      }
+    }
+
+    // Update time every second
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+
+    // Favorites management (using localStorage)
+    let favorites = JSON.parse(localStorage.getItem('neurosynth-favorites') || '[]');
+
+    function toggleFavorite(term) {
+      const index = favorites.indexOf(term);
+      if (index > -1) {
+        favorites.splice(index, 1);
+      } else {
+        favorites.push(term);
+      }
+      localStorage.setItem('neurosynth-favorites', JSON.stringify(favorites));
+      updateFavoritesCount();
+      updateFavoritesDisplay();
+      return favorites.includes(term);
+    }
+
+    function isFavorite(term) {
+      return favorites.includes(term);
+    }
+
+    function updateFavoritesCount() {
+      const counter = document.getElementById('favorites-count');
+      if (counter) {
+        counter.textContent = favorites.length;
+      }
+    }
+
+    function updateFavoritesDisplay() {
+      const display = document.getElementById('favorites-display');
+
+      if (favorites.length === 0) {
+        display.innerHTML = `
+          <div class="text-center py-20 text-gray-500">
+            <div class="text-6xl mb-4">⭐</div>
+            <p class="text-xl">尚未收藏任何術語</p>
+            <p class="text-sm mt-2">在術語卡片上點擊星號即可收藏</p>
+          </div>
+        `;
+        return;
+      }
+
+      const count = document.createElement('p');
+      count.className = 'text-sm text-gray-400 mb-6 font-medium tracking-wide';
+      count.innerHTML = `共 <span class="text-netflix-red font-bold text-lg">${favorites.length}</span> 個收藏`;
+
+      const grid = document.createElement('div');
+      grid.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4';
+
+      favorites.forEach(term => {
+        const card = document.createElement('div');
+        card.className = 'term-card rounded-lg p-4 text-center font-medium relative group';
+
+        const starBtn = document.createElement('button');
+        starBtn.className = 'absolute top-2 right-2 text-2xl transition-transform hover:scale-125 z-10';
+        starBtn.textContent = '⭐';
+        starBtn.onclick = (e) => {
+          e.stopPropagation();
+          toggleFavorite(term);
+          // The updateFavoritesDisplay() is already called in toggleFavorite()
+        };
+
+        const termText = document.createElement('div');
+        termText.className = 'text-white pt-6';
+        termText.textContent = term;
+
+        card.appendChild(starBtn);
+        card.appendChild(termText);
+        card.onclick = () => searchRelatedTerms(term);
+        grid.appendChild(card);
+      });
+
+      display.innerHTML = '';
+      display.appendChild(count);
+      display.appendChild(grid);
+    }
+
     // Tab Switching
     const tabs = document.querySelectorAll('.tab-button');
     const contents = document.querySelectorAll('.tab-content');
@@ -516,6 +796,11 @@
 
         tab.classList.add('active');
         contents[index].classList.remove('hidden');
+
+        // Update favorites display when switching to favorites tab (index 3)
+        if (index === 3) {
+          updateFavoritesDisplay();
+        }
       });
     });
 
@@ -523,10 +808,16 @@
     let allTerms = [];
     let currentCategory = 'all';
     let currentSearchQuery = '';
+    let debounceTimer = null;
 
     async function fetchAllTerms() {
       const display = document.getElementById('terms-display');
-      display.innerHTML = '<div class="flex justify-center py-20"><div class="loading"></div></div>';
+      display.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-20">
+          <div class="loading mb-4"></div>
+          <p class="text-gray-400 animate-pulse">正在載入術語資料...</p>
+        </div>
+      `;
 
       try {
         const resp = await fetch(`${API_BASE}/terms`);
@@ -535,7 +826,16 @@
         const data = await resp.json();
         allTerms = data.terms || [];
 
-        displayTerms(allTerms);
+        // Show success message briefly
+        display.innerHTML = `
+          <div class="text-center py-10 text-green-400">
+            <p class="text-xl font-bold">✓ 成功載入 ${allTerms.length} 個術語</p>
+          </div>
+        `;
+
+        setTimeout(() => {
+          displayTerms(allTerms);
+        }, 500);
       } catch (err) {
         display.innerHTML = `
           <div class="bg-red-900 bg-opacity-20 border border-netflix-red rounded-xl p-8 text-center">
@@ -590,8 +890,24 @@
 
       terms.forEach(term => {
         const card = document.createElement('div');
-        card.className = 'term-card rounded-lg p-4 text-center font-medium';
-        card.innerHTML = `<div class="text-white">${term}</div>`;
+        card.className = 'term-card rounded-lg p-4 text-center font-medium relative group';
+        const isFav = isFavorite(term);
+
+        const starBtn = document.createElement('button');
+        starBtn.className = 'absolute top-2 right-2 text-2xl transition-transform hover:scale-125 z-10 opacity-0 group-hover:opacity-100';
+        starBtn.textContent = isFav ? '⭐' : '☆';
+        starBtn.onclick = (e) => {
+          e.stopPropagation();
+          const nowFav = toggleFavorite(term);
+          starBtn.textContent = nowFav ? '⭐' : '☆';
+        };
+
+        const termText = document.createElement('div');
+        termText.className = 'text-white';
+        termText.textContent = term;
+
+        card.appendChild(starBtn);
+        card.appendChild(termText);
         card.onclick = () => searchRelatedTerms(term);
         grid.appendChild(card);
       });
@@ -614,10 +930,26 @@
       });
     });
 
-    // Search filter
+    // Search filter with debounce (AJAX real-time search simulation)
     document.getElementById('filter-terms').addEventListener('input', (e) => {
       currentSearchQuery = e.target.value.trim();
-      filterTerms();
+
+      // Show searching indicator
+      const display = document.getElementById('terms-display');
+      if (currentSearchQuery) {
+        display.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-10">
+            <div class="loading mb-4"></div>
+            <p class="text-gray-400 animate-pulse">正在即時搜尋「${currentSearchQuery}」...</p>
+          </div>
+        `;
+      }
+
+      // Debounce for better performance
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        filterTerms();
+      }, 300);
     });
 
     // ========== Tab 2: Related Terms ==========
@@ -627,7 +959,12 @@
       document.getElementById('related-term-input').value = term;
 
       const display = document.getElementById('related-terms-display');
-      display.innerHTML = '<div class="flex justify-center py-20"><div class="loading"></div></div>';
+      display.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-20">
+          <div class="loading mb-4"></div>
+          <p class="text-gray-400 animate-pulse">正在查詢「${term}」的相關術語...</p>
+        </div>
+      `;
 
       try {
         const resp = await fetch(`${API_BASE}/terms/${encodeURIComponent(term)}`);
@@ -695,6 +1032,9 @@
           <div class="bg-red-900 bg-opacity-20 border border-netflix-red rounded-xl p-8 text-center">
             <p class="text-netflix-red font-bold text-xl mb-2">查詢失敗</p>
             <p class="text-gray-400">${err.message}</p>
+            <button onclick="searchRelatedTerms('${term}')" class="btn-primary px-6 py-3 rounded-lg text-sm mt-4">
+              重試
+            </button>
           </div>
         `;
       }
@@ -715,7 +1055,13 @@
     // ========== Tab 3: Study Search ==========
     async function searchStudies(query) {
       const display = document.getElementById('studies-display');
-      display.innerHTML = '<div class="flex justify-center py-20"><div class="loading"></div></div>';
+      display.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-20">
+          <div class="loading mb-4"></div>
+          <p class="text-gray-400 animate-pulse">正在搜尋研究資料...</p>
+          <p class="text-gray-500 text-sm mt-2">查詢條件:「${query}」</p>
+        </div>
+      `;
 
       try {
         const resp = await fetch(`${API_BASE}/query/${encodeURIComponent(query)}/studies`);
@@ -763,6 +1109,9 @@
           <div class="bg-red-900 bg-opacity-20 border border-netflix-red rounded-xl p-8 text-center">
             <p class="text-netflix-red font-bold text-xl mb-2">搜尋失敗</p>
             <p class="text-gray-400">${err.message}</p>
+            <button onclick="searchStudies('${query}')" class="btn-primary px-6 py-3 rounded-lg text-sm mt-4">
+              重試
+            </button>
           </div>
         `;
       }
@@ -780,8 +1129,161 @@
       }
     });
 
+    // ========== Tutorial Modal ==========
+    const shortcutsModal = document.getElementById('shortcuts-modal');
+    const shortcutsBtn = document.getElementById('shortcuts-btn');
+    const closeShortcutsBtn = document.getElementById('close-shortcuts');
+    const dontShowAgainCheckbox = document.getElementById('dont-show-again');
+    const tutorialPages = document.querySelectorAll('.tutorial-page');
+    const progressDots = document.querySelectorAll('.progress-dot');
+    const prevBtn = document.getElementById('tutorial-prev');
+    const nextBtn = document.getElementById('tutorial-next');
+    const pageInfo = document.getElementById('tutorial-page-info');
+
+    let currentPage = 0;
+    const totalPages = tutorialPages.length;
+
+    function updateTutorialPage() {
+      // Hide all pages
+      tutorialPages.forEach(page => page.classList.add('hidden'));
+      // Show current page
+      tutorialPages[currentPage].classList.remove('hidden');
+
+      // Update progress dots
+      progressDots.forEach((dot, index) => {
+        if (index === currentPage) {
+          dot.classList.add('active', 'bg-netflix-red');
+          dot.classList.remove('bg-gray-600');
+        } else {
+          dot.classList.remove('active', 'bg-netflix-red');
+          dot.classList.add('bg-gray-600');
+        }
+      });
+
+      // Update buttons
+      prevBtn.disabled = currentPage === 0;
+      if (currentPage === totalPages - 1) {
+        nextBtn.textContent = '開始探索';
+        nextBtn.classList.add('animate-pulse');
+      } else {
+        nextBtn.textContent = '下一步';
+        nextBtn.classList.remove('animate-pulse');
+      }
+
+      // Update page info
+      pageInfo.textContent = `${currentPage + 1} / ${totalPages}`;
+    }
+
+    function showTutorialModal() {
+      currentPage = 0;
+      updateTutorialPage();
+      shortcutsModal.classList.remove('hidden');
+    }
+
+    function hideTutorialModal() {
+      shortcutsModal.classList.add('hidden');
+
+      // Save preference if checkbox is checked
+      if (dontShowAgainCheckbox.checked) {
+        localStorage.setItem('neurosynth-shortcuts-seen', 'true');
+      }
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentPage > 0) {
+        currentPage--;
+        updateTutorialPage();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentPage < totalPages - 1) {
+        currentPage++;
+        updateTutorialPage();
+      } else {
+        // Last page - close tutorial
+        hideTutorialModal();
+      }
+    });
+
+    shortcutsBtn.addEventListener('click', showTutorialModal);
+    closeShortcutsBtn.addEventListener('click', hideTutorialModal);
+    shortcutsModal.addEventListener('click', (e) => {
+      if (e.target === shortcutsModal) {
+        hideTutorialModal();
+      }
+    });
+
+    // Show tutorial on first visit
+    function checkFirstVisit() {
+      const hasSeenShortcuts = localStorage.getItem('neurosynth-shortcuts-seen');
+      if (!hasSeenShortcuts) {
+        // Delay showing modal slightly to let the page load
+        setTimeout(() => {
+          showTutorialModal();
+        }, 1000);
+      }
+    }
+
+    // ========== Keyboard Shortcuts ==========
+    document.addEventListener('keydown', (e) => {
+      // Don't process if typing in input (except for special keys)
+      if (e.target.tagName === 'INPUT' && e.key !== 'Escape' && e.key !== '/') return;
+
+      // ?: Toggle tutorial modal
+      if (e.key === '?') {
+        e.preventDefault();
+        if (shortcutsModal.classList.contains('hidden')) {
+          showTutorialModal();
+        } else {
+          hideTutorialModal();
+        }
+        return;
+      }
+
+      // Esc: Close modal or clear search input
+      if (e.key === 'Escape') {
+        if (!shortcutsModal.classList.contains('hidden')) {
+          hideTutorialModal();
+        } else {
+          const activeTab = document.querySelector('.tab-content:not(.hidden)');
+          const searchInput = activeTab.querySelector('input[type="text"]');
+          if (searchInput && document.activeElement === searchInput) {
+            searchInput.value = '';
+            searchInput.blur();
+            // Trigger input event to update display
+            searchInput.dispatchEvent(new Event('input'));
+          }
+        }
+        return;
+      }
+
+      // Don't process other shortcuts when modal is open
+      if (!shortcutsModal.classList.contains('hidden')) return;
+
+      // 1-4: Switch tabs (1=所有術語, 2=相關術語, 3=研究搜尋, 4=我的收藏)
+      if (e.key >= '1' && e.key <= '4') {
+        const tabIndex = parseInt(e.key) - 1;
+        if (tabs[tabIndex]) {
+          tabs[tabIndex].click();
+        }
+      }
+
+      // / : Focus search input in current tab
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const activeTab = document.querySelector('.tab-content:not(.hidden)');
+        const searchInput = activeTab.querySelector('input[type="text"]');
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+    });
+
     // ========== Initialize ==========
+    updateFavoritesCount();
     fetchAllTerms();
+    checkFirstVisit();
   </script>
 </body>
 </html>
